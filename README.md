@@ -14,9 +14,7 @@ As usual we can answer this with it depends on your application. This repository
 
 This approach allows to create completely different toolbar look and feel for each Fragment. In this example the first Fragment has a collapsing toolbar where the second hat a "normal" toolbar.
 
-![Preview](http://fs5.directupload.net/images/170513/39lm6ie9.gif)
-
-Click the [direct GIF link](http://fs5.directupload.net/images/170513/39lm6ie9.gif) if you cannot see how fragment "OTHER" is opened.
+Click the [direct GIF link](http://fs5.directupload.net/images/170513/39lm6ie9.gif) to see how it looks like.
 
 ## Feedback
 
