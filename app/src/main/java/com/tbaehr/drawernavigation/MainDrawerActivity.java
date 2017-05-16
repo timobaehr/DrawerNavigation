@@ -11,24 +11,37 @@ import com.stroeer.t_online.tomonext.R;
 import com.tbaehr.drawernavigation.base.BaseDrawerActivity;
 import com.tbaehr.drawernavigation.base.BaseDrawerFragment;
 
-import java.util.HashMap;
 import java.util.Map;
 
-public class MainDrawerActivity extends BaseDrawerActivity {
-
-    private static class FragmentTag {
-        static final String MAIN = "MAIN";
-        static final String OTHER = "OTHER";
-    }
+public class MainDrawerActivity extends BaseDrawerActivity<MainDrawerView, MainDrawerPresenter> implements MainDrawerView {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        setAsFullScreenActivity();
+        setStatusBarTranslucent();
+    }
 
+    @Override
+    public void onPresenterProvided(MainDrawerPresenter presenter) {
+        super.onPresenterProvided(presenter);
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
+        navigationView.setNavigationItemSelectedListener(presenter);
+    }
+
+    @Override
+    public Class<? extends MainDrawerPresenter> getTypeClazz() {
+        return MainDrawerPresenter.class;
+    }
+
+    @Override
+    public MainDrawerPresenter create() {
+        return new MainDrawerPresenter();
+    }
+
+    @Override
+    public MainDrawerView getViewLayer() {
+        return this;
     }
 
     @Override
@@ -49,33 +62,7 @@ public class MainDrawerActivity extends BaseDrawerActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    public boolean onNavigationItemSelected(MenuItem item) {
-        switch(item.getItemId()) {
-            case R.id.nav_main:
-                showFragment(FragmentTag.MAIN);
-                break;
-            case R.id.nav_other:
-                showFragment(FragmentTag.OTHER);
-                break;
-        }
-
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        drawer.closeDrawer(GravityCompat.START);
-        return true;
+        return getPresenter().onOptionsItemSelected(item) || super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -90,16 +77,22 @@ public class MainDrawerActivity extends BaseDrawerActivity {
 
     @Override
     protected String getDefaultFragmentTag() {
-        return FragmentTag.MAIN;
+        return getPresenter().getDefaultFragmentTag();
     }
 
     @Override
     protected Map<String, BaseDrawerFragment> provideFragments() {
-        Map<String, BaseDrawerFragment> fragments = new HashMap<>();
+        return getPresenter().provideFragments();
+    }
 
-        fragments.put(FragmentTag.MAIN, new MainFragment());
-        fragments.put(FragmentTag.OTHER, new OtherFragment());
+    @Override
+    public void closeDrawer() {
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        drawer.closeDrawer(GravityCompat.START);
+    }
 
-        return fragments;
+    @Override
+    public void showFragment(String fragmentTag) {
+        super.showFragment(fragmentTag);
     }
 }

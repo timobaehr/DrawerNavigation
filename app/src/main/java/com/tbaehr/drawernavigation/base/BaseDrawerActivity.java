@@ -1,46 +1,50 @@
 package com.tbaehr.drawernavigation.base;
 
-import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.IdRes;
 import android.support.annotation.Nullable;
-import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.AppCompatActivity;
-import android.view.Window;
-import android.view.WindowManager;
+
+import com.propaneapps.tomorrow.presenter.BasePresenter;
 
 import java.util.Map;
 
-public abstract class BaseDrawerActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+public abstract class BaseDrawerActivity<V, P extends BasePresenter<V>> extends BaseActivity<V, P> {
 
     private Map<String, BaseDrawerFragment> mFragmentMap;
+
+    private Bundle mSavedInstanceState;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mSavedInstanceState = savedInstanceState;
+    }
+
+    @Override
+    public void onPresenterProvided(P presenter) {
+        super.onPresenterProvided(presenter);
 
         mFragmentMap = provideFragments();
 
         // If we're being restored from a previous state,
         // then we don't need to do anything and should return
         // or else we could end up with overlapping fragments.
-        if (savedInstanceState != null) {
+        if (mSavedInstanceState != null) {
             return;
         }
 
         showFragment(getDefaultFragmentTag());
     }
 
-    public void setAsFullScreenActivity() {
-        Window window = getWindow();
-        window.addFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
-        window.addFlags(WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN);
-        window.addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            window.addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-        }
+    protected void showFragment(final String tagOfFragment) {
+        BaseDrawerFragment drawerFragment = mFragmentMap.get(tagOfFragment);
+
+        getSupportFragmentManager().beginTransaction()
+                .replace(getFragmentContainerViewId(), drawerFragment, getDefaultFragmentTag())
+                .addToBackStack(null)
+                .commitAllowingStateLoss();
     }
 
     /**
@@ -59,15 +63,6 @@ public abstract class BaseDrawerActivity extends AppCompatActivity
      * @return ID of the fragment container view
      */
     public abstract @IdRes int getFragmentContainerViewId();
-
-    protected void showFragment(String tagOfFragment) {
-        BaseDrawerFragment drawerFragment = mFragmentMap.get(tagOfFragment);
-
-        getSupportFragmentManager().beginTransaction()
-                .replace(getFragmentContainerViewId(), drawerFragment, getDefaultFragmentTag())
-                .addToBackStack(null)
-                .commit();
-    }
 
     /**
      * This will be called always when calling showFragment(String tagOfFragment).
