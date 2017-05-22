@@ -7,7 +7,6 @@ import android.support.v4.widget.DrawerLayout;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import com.stroeer.t_online.tomonext.R;
 import com.tbaehr.drawernavigation.base.BaseDrawerActivity;
 import com.tbaehr.drawernavigation.base.BaseDrawerFragment;
 

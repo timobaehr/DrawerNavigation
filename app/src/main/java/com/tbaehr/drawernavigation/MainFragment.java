@@ -8,7 +8,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.stroeer.t_online.tomonext.R;
 import com.tbaehr.drawernavigation.base.BaseDrawerFragment;
 
 public class MainFragment extends BaseDrawerFragment {
