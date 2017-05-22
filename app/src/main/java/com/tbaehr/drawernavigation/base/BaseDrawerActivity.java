@@ -15,22 +15,32 @@ import java.util.Map;
 public abstract class BaseDrawerActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
+    private static final String KEY_ACTIVE_FRAGMENT = "active fragment";
+
+    private String activeFragmentTag;
+
     private Map<String, BaseDrawerFragment> mFragmentMap;
 
     @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    protected void onPostCreate(@Nullable Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
 
         mFragmentMap = provideFragments();
 
-        // If we're being restored from a previous state,
-        // then we don't need to do anything and should return
-        // or else we could end up with overlapping fragments.
-        if (savedInstanceState != null) {
-            return;
+        if (savedInstanceState == null) {
+            activeFragmentTag = getDefaultFragmentTag();
+            showFragment(activeFragmentTag);
+        } else {
+            activeFragmentTag = savedInstanceState.getString(KEY_ACTIVE_FRAGMENT);
         }
+    }
 
-        showFragment(getDefaultFragmentTag());
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        if (activeFragmentTag != null) {
+            outState.putString(KEY_ACTIVE_FRAGMENT, activeFragmentTag);
+        }
+        super.onSaveInstanceState(outState);
     }
 
     public void setAsFullScreenActivity() {
@@ -60,8 +70,9 @@ public abstract class BaseDrawerActivity extends AppCompatActivity
      */
     public abstract @IdRes int getFragmentContainerViewId();
 
-    protected void showFragment(String tagOfFragment) {
+    public void showFragment(String tagOfFragment) {
         BaseDrawerFragment drawerFragment = mFragmentMap.get(tagOfFragment);
+        activeFragmentTag = tagOfFragment;
 
         getSupportFragmentManager().beginTransaction()
                 .replace(getFragmentContainerViewId(), drawerFragment, getDefaultFragmentTag())

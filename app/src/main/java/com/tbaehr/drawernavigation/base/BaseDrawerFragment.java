@@ -38,7 +38,17 @@ public abstract class BaseDrawerFragment extends Fragment {
         return rootView;
     }
 
-    private void setToolbarTitle(@StringRes int title) {
+    public void setToolbarTitle(String title) {
+        ActionBar actionBar = getBaseDrawerActivity().getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setTitle(title);
+        } else {
+            getBaseDrawerActivity().setTitle(title);
+            mToolbar.setTitle(title);
+        }
+    }
+
+    public void setToolbarTitle(@StringRes int title) {
         ActionBar actionBar = getBaseDrawerActivity().getSupportActionBar();
         if (actionBar != null) {
             actionBar.setTitle(title);
