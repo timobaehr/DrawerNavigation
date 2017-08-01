@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.annotation.IdRes;
 import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
+import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Window;
@@ -74,10 +75,26 @@ public abstract class BaseDrawerActivity extends AppCompatActivity
         BaseDrawerFragment drawerFragment = mFragmentMap.get(tagOfFragment);
         activeFragmentTag = tagOfFragment;
 
+        if (tagOfFragment.equals(getDefaultFragmentTag())) {
+            getNavigationView().getMenu().getItem(0).setChecked(true);
+        }
+
         getSupportFragmentManager().beginTransaction()
                 .replace(getFragmentContainerViewId(), drawerFragment, getDefaultFragmentTag())
-                .addToBackStack(null)
+                .disallowAddToBackStack()
                 .commit();
+    }
+
+    @Override
+    public void onBackPressed() {
+        DrawerLayout drawer = getDrawerLayout();
+        if (drawer.isDrawerOpen(GravityCompat.START)) {
+            drawer.closeDrawer(GravityCompat.START);
+        } else if (!activeFragmentTag.equals(getDefaultFragmentTag())) {
+            showFragment(getDefaultFragmentTag());
+        } else {
+            super.onBackPressed();
+        }
     }
 
     /**
@@ -95,5 +112,7 @@ public abstract class BaseDrawerActivity extends AppCompatActivity
      * its unique Fragment TAG
      */
     protected abstract Map<String, BaseDrawerFragment> provideFragments();
+
+    protected abstract NavigationView getNavigationView();
 
 }
