@@ -15,6 +15,8 @@ import java.util.Map;
 
 public class MainDrawerActivity extends BaseDrawerActivity {
 
+    private NavigationView navigationView;
+
     private static class FragmentTag {
         static final String MAIN = "MAIN";
         static final String OTHER = "OTHER";
@@ -26,18 +28,8 @@ public class MainDrawerActivity extends BaseDrawerActivity {
         setContentView(R.layout.activity_main);
         setAsFullScreenActivity();
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
-    }
-
-    @Override
-    public void onBackPressed() {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        if (drawer.isDrawerOpen(GravityCompat.START)) {
-            drawer.closeDrawer(GravityCompat.START);
-        } else {
-            super.onBackPressed();
-        }
     }
 
     @Override
@@ -100,5 +92,10 @@ public class MainDrawerActivity extends BaseDrawerActivity {
         fragments.put(FragmentTag.OTHER, new OtherFragment());
 
         return fragments;
+    }
+
+    @Override
+    protected NavigationView getNavigationView() {
+        return navigationView;
     }
 }
